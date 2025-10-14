@@ -144,3 +144,6 @@ vite.config.ts.timestamp-*
 
 
 .claude/
+comprehensive-test.sh
+test-login.js
+test-login.sh
