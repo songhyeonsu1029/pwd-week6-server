@@ -138,11 +138,20 @@ class AuthController {
    */
   googleCallback = (req, res, next) => {
     passport.authenticate('google', (err, user, info) => {
+      console.log('[Google Callback] Started', {
+        hasError: !!err,
+        hasUser: !!user,
+        sessionID: req.sessionID,
+        cookies: req.headers.cookie
+      });
+
       if (err) {
+        console.error('[Google Callback] Authentication error:', err);
         return res.redirect(`${process.env.CLIENT_URL || 'http://localhost:3000'}/login?error=server_error`);
       }
 
       if (!user) {
+        console.error('[Google Callback] No user found:', info);
         return res.redirect(
           `${process.env.CLIENT_URL || 'http://localhost:3000'}/login?error=${encodeURIComponent(
             info.message || '로그인 실패'
@@ -152,10 +161,26 @@ class AuthController {
 
       req.login(user, (err) => {
         if (err) {
+          console.error('[Google Callback] Login error:', err);
           return res.redirect(`${process.env.CLIENT_URL || 'http://localhost:3000'}/login?error=login_error`);
         }
 
-        return res.redirect(`${process.env.CLIENT_URL || 'http://localhost:3000'}/dashboard`);
+        console.log('[Google Callback] Login successful', {
+          userId: user._id,
+          sessionID: req.sessionID,
+          sessionSaved: req.session ? 'yes' : 'no'
+        });
+
+        // 세션 저장 강제 실행
+        req.session.save((err) => {
+          if (err) {
+            console.error('[Google Callback] Session save error:', err);
+            return res.redirect(`${process.env.CLIENT_URL || 'http://localhost:3000'}/login?error=session_error`);
+          }
+
+          console.log('[Google Callback] Session saved successfully');
+          return res.redirect(`${process.env.CLIENT_URL || 'http://localhost:3000'}/dashboard`);
+        });
       });
     })(req, res, next);
   };
