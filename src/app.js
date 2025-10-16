@@ -28,11 +28,13 @@ function createApp() {
     secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
     resave: false,
     saveUninitialized: false,
+    name: 'sessionId', // 명시적 쿠키 이름 설정
     cookie: {
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7일
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production', // HTTPS에서만 쿠키 전송
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      path: '/', // 명시적 경로 설정
     },
   };
 

@@ -103,7 +103,7 @@ class AuthController {
           });
         }
 
-        res.clearCookie('connect.sid');
+        res.clearCookie('sessionId');
         res.json({
           success: true,
           message: '로그아웃되었습니다.',
